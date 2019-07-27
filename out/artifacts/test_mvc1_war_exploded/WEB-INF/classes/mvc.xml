@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--1.控制器映射器-->
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+    <!--2.控制器适配器-->
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+    <!--3.视图解析器-->
+   <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"/>
+
+    <bean id="/hello" class="com.wjx.hello.HelloController"/>
+    <bean id="/hello2" class="com.wjx.hello.HelloController2"/>
+</beans>
