@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="lib9">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/shiro-1/lib/log4j-1.2.17.jar!/" />
+      <root url="jar://$PROJECT_DIR$/shiro-1/lib/commons-beanutils-1.9.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/shiro-1/lib/slf4j-log4j12-1.7.25.jar!/" />
+      <root url="jar://$PROJECT_DIR$/shiro-1/lib/commons-logging-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/shiro-1/lib/shiro-core-1.4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/shiro-1/lib/slf4j-api-1.7.25.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
