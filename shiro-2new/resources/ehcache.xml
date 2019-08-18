@@ -31,4 +31,20 @@
             diskExpiryThreadIntervalSeconds="120"
             memoryStoreEvictionPolicy="LRU"
     />
+<!--    <cache-->
+<!--        name="authorizationCache"-->
+<!--        eternal="false"-->
+<!--        timeToIdleSeconds="3600"-->
+<!--        timeToLiveSeconds="0"-->
+<!--        overflowToDisk="false"-->
+<!--        statistics="true"-->
+<!--    />-->
+<!--    <cache-->
+<!--            name="authenticationCache"-->
+<!--            eternal="false"-->
+<!--            timeToIdleSeconds="3600"-->
+<!--            timeToLiveSeconds="0"-->
+<!--            overflowToDisk="false"-->
+<!--            statistics="true"-->
+<!--    />-->
 </ehcache>

@@ -11,7 +11,15 @@
     <!--1.配置SecurityManager-->
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
         <property name="cacheManager" ref="cacheManager"/>
-        <property name="realm" ref="jdbcRealm"/>
+<!--        <property name="realm" ref="jdbcRealm"/>-->
+        <property name="authenticator" ref="authenticator"/>
+        <property name="realms">
+            <list>
+                <ref bean="jdbcRealm"/>
+                <ref bean="secondRealm"/>
+            </list>
+        </property>
+        <property name="rememberMeManager.cookie.maxAge" value="30"/>
     </bean>
 
     <!-- Let's use some enterprise caching support for better performance.  You can replace this with any enterprise
@@ -30,14 +38,41 @@
         <property name="cacheManagerConfigFile" value="classpath:ehcache.xml"/>
     </bean>
 
+    <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
+<!--        <property name="realms">-->
+<!--            <list>-->
+<!--                <ref bean="jdbcRealm"/>-->
+<!--                <ref bean="secondRealm"/>-->
+<!--            </list>-->
+<!--        </property>-->
+        <property name="authenticationStrategy">
+<!--            <bean class="org.apache.shiro.authc.pam.AllSuccessfulStrategy"/>-->
+            <bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"/>
+        </property>
+    </bean>
     <!-- Used by the SecurityManager to access security data (users, roles, etc).
          Many other realm implementations can be used too (PropertiesRealm,
          LdapRealm, etc. -->
 
     <!--3.配置 Realm-->
     <!--3.1直接配置实现了com.wjx.shiro.ShiroRealm接口的bean-->
-    <bean id="jdbcRealm" class="com.wjx.shiro.ShiroRealm">
+    <bean id="jdbcRealm" class="com.wjx.shiro.realms.ShiroRealm">
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="MD5"/>
+                <property name="hashIterations" value="1024"/>
+            </bean>
+        </property>
+    </bean>
 
+    <bean id="secondRealm" class="com.wjx.shiro.realms.SecondRealm">
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="SHA1"/>
+                <property name="hashIterations" value="1024"/>
+
+            </bean>
+        </property>
     </bean>
 
     <!-- =========================================================
@@ -73,11 +108,12 @@
            若不一致，则会抛出：org.springframework.beans.factory.NoSuchBeanDefinitionException，
            因为 Shiro 会来 SpringIOC容器中查找和<filter-name>名字对应的 filter bean.
     -->
-    <bean id="abc" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
         <property name="loginUrl" value="/login.jsp"/>
         <property name="successUrl" value="/list.jsp"/>
         <property name="unauthorizedUrl" value="/unauthorized.jsp"/>
+        <property name="filterChainDefinitionMap" ref="filterChainDefinitionMap"/>
         <!-- The 'filters' property is not necessary since any declared javax.servlet.Filter bean
              defined will be automatically acquired and available via its beanName in chain
              definitions, but you can perform overrides or parent/child consolidated configuration
@@ -92,13 +128,28 @@
         <!-- 以及访问这些页面需要的权限-->
         <!-- （1）anno 可以被匿名访问-->
         <!-- （2）authc 必须认证之后（即登录之后）才可以访问的页面-->
+        <!-- （3）logout 登出-->
+        <!-- （4）roles 角色过滤器-->
+        <!--
         <property name="filterChainDefinitions">
             <value>
+                 注释掉：注意：访问是有顺序的，"/** = authc" 必须放在最后，如果放在前面，它后面的都访问不到
                 /login.jsp = anon
+                /shiro/login = anon
+                /shiro/logout = logout
+                /user.jsp = roles[user]
+                /admin.jsp = roles[admin]
                 # everything else requires authentication:
-<!--                /** = authc-->
-                /user.jsp = authc
+                /** = authc
+               注释掉： /user.jsp = authc
             </value>
         </property>
+        -->
     </bean>
+
+    <bean id="shiroService" class="com.wjx.shiro.services.ShiroService"/>
+
+    <!--配置一个bean，该bean 实际上是一个Map，通过实例工厂方法的方式-->
+    <bean id="filterChainDefinitionMapBuilder" class="com.wjx.shiro.factory.FilterChainDefinitionMapBuilder"/>
+    <bean id="filterChainDefinitionMap" factory-bean="filterChainDefinitionMapBuilder" factory-method="buildFilterChainDefinitionMap"/>
 </beans>
